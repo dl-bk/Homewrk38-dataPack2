@@ -1,5 +1,6 @@
 import hashlib
 import random
+import json
 
 class Order:
 
@@ -9,9 +10,9 @@ class Order:
         self._client_name = client_name
         self._client_phone = client_phone
         self._price = price
-        self._hash_obj = self.generate_hash()
+        self._hash_obj = self._generate_hash()
     
-    def generate_hash(self) -> str:
+    def _generate_hash(self) -> str:
         hash_string = self._client_name + str(self._price) + str(self._client_phone) + str(random.randint(-100, 10000))
         hash_object = hashlib.sha256(hash_string.encode())
         return hash_object.hexdigest()
@@ -52,3 +53,9 @@ class OrderesRepository:
     def display_orders(self):
         for key, value in self._orders.items():
             print(f"{key}: {value}")
+    
+    def save_orders(self, filename):
+        orders_list = [{hash: order.__dict__} for hash, order in self._orders.items()]
+        with open(filename, 'w') as wfile:
+            json.dump(orders_list, wfile, indent=2)
+        print("data saved")
