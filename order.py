@@ -4,13 +4,12 @@ import json
 
 class Order:
 
-    _hash_obj: str = None
-
     def __init__(self, client_name: str, client_phone: str, price: float) -> None:
         self._client_name = client_name
         self._client_phone = client_phone
         self._price = price
         self._hash_obj = self._generate_hash()
+        
     
     def _generate_hash(self) -> str:
         hash_string = self._client_name + str(self._price) + str(self._client_phone) + str(random.randint(-100, 10000))
@@ -39,13 +38,13 @@ class Order:
         return self._price
 
 class OrderesRepository:
-    _orders = {}
+    _orders = []
 
     def get_hash(self,order: Order):
         return order._hash_obj
     
     def add_order(self, order: Order):
-        self._orders[order._hash_obj] = order
+        self._orders.append(order)
 
     def remove_order(self, hash_key):
         self._orders.pop(hash_key)
@@ -55,7 +54,7 @@ class OrderesRepository:
             print(f"{key}: {value}")
     
     def save_orders(self, filename):
-        orders_list = [{hash: order.__dict__} for hash, order in self._orders.items()]
+        orders_list = [order.__dict__ for order in self._orders]
         with open(filename, 'w') as wfile:
             json.dump(orders_list, wfile, indent=2)
         print("data saved")
